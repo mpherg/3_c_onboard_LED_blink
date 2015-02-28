@@ -2,6 +2,9 @@
  * Author: Brendan Le Foll <brendan.le.foll@intel.com>
  * Copyright (c) 2014 Intel Corporation.
  *
+ * Author: Michael Ferguson <mpherg@gmail.com>
+ * Copyright (c) 2015 Michael Ferguson.
+ *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
  * "Software"), to deal in the Software without restriction, including
@@ -28,36 +31,38 @@
 
 #include "mraa/gpio.h"
 
-int
-main(int argc, char **argv)
-{
-    mraa_platform_t platform = mraa_get_platform_type();
-    mraa_gpio_context gpio;
-    char board_name[] = "Some weird devboard that isn't recognised...";
-    int ledstate = 0;
+int main(int argc, char **argv) {
+	mraa_platform_t platform = mraa_get_platform_type();
+	mraa_gpio_context gpio;
+	char board_name[] = "Some weird devboard that isn't recognized...";
+	int ledstate = 0;
 
-    switch (platform) {
-        case MRAA_INTEL_GALILEO_GEN1:
-            strcpy(board_name, "Intel Galileo Gen1");
-            gpio = mraa_gpio_init_raw(3);
-            break;
-        case MRAA_INTEL_GALILEO_GEN2:
-            strcpy(board_name, "Intel Galileo Gen2");
-            gpio = mraa_gpio_init(13);
-            break ;
-        default:
-            gpio = mraa_gpio_init(13);
-    }
+	switch (platform) {
+	case MRAA_INTEL_GALILEO_GEN1:
+		strcpy(board_name, "Intel Galileo Gen1");
+		gpio = mraa_gpio_init_raw(3);
+		break;
+	case MRAA_INTEL_GALILEO_GEN2:
+		strcpy(board_name, "Intel Galileo Gen2");
+		gpio = mraa_gpio_init(13);
+		break;
+	case MRAA_INTEL_EDISON_FAB_C:
+		strcpy(board_name, "Intel Edison");
+		gpio = mraa_gpio_init(MRAA_INTEL_EDISON_GP165);
+		break;
+	default:
+		gpio = mraa_gpio_init(13);
+	}
 
-    fprintf(stdout, "Welcome to libmraa\n Version: %s\n Running on %s\n",
-        mraa_get_version(), board_name);
+	fprintf(stdout, "Welcome to libmraa\n Version: %s\n Running on %s\n",
+			mraa_get_version(), board_name);
 
-    mraa_gpio_dir(gpio, MRAA_GPIO_OUT);
-    for (;;) {
-        ledstate = !ledstate;
-        mraa_gpio_write(gpio, !ledstate);
-        sleep(1);
-    }
+	mraa_gpio_dir(gpio, MRAA_GPIO_OUT);
+	for (;;) {
+		ledstate = !ledstate;
+		mraa_gpio_write(gpio, !ledstate);
+		sleep(1);
+	}
 
-    return 0;
+	return 0;
 }
